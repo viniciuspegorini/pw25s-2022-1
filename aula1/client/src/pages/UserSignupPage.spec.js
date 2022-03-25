@@ -1,4 +1,4 @@
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, waitForElementToBeRemoved } from "@testing-library/react";
 import UserSignupPage from "./UserSignupPage";
 
 describe('UserSignupPage', () => {
@@ -56,6 +56,28 @@ describe('UserSignupPage', () => {
                 },
             }
         };
+        const mockAsyncDelayed = () => {
+            return jest.fn().mockImplementation(() => {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        resolve({});
+                    }, 500);
+                });
+            });
+        }
+
+        const mockAsyncDelayedRejected = () => {
+            return jest.fn().mockImplementation(() => {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        reject({
+                            response: { data: {} }
+                        });
+                    }, 500);
+                });
+            });
+        }
+
         let displayNameInput, usernameInput, passwordInput, repeatPasswordInput, button;
         const setupForSubmit = (props) => {
             const rendered = render(<UserSignupPage {...props} />)
@@ -108,7 +130,7 @@ describe('UserSignupPage', () => {
             const actions = {
                 postSignup: jest.fn().mockResolvedValueOnce({}),
             }
-            setupForSubmit({actions});
+            setupForSubmit({ actions });
             fireEvent.click(button);
             expect(actions.postSignup).toHaveBeenCalledTimes(1);
         });
@@ -122,15 +144,63 @@ describe('UserSignupPage', () => {
             const actions = {
                 postSignup: jest.fn().mockResolvedValueOnce({}),
             }
-            setupForSubmit({actions});
+            setupForSubmit({ actions });
             fireEvent.click(button);
 
             const expectedUserObject = {
                 displayName: 'my-display-name',
-                userame: 'my-username',
+                username: 'my-username',
                 password: 'P4ssword',
             }
             expect(actions.postSignup).toHaveBeenCalledWith(expectedUserObject);
         });
+
+        it('does not allow user to click the Signup button when there is an outgoing api call', () => {
+            const actions = {
+                postSignup: mockAsyncDelayed(),
+            }
+            setupForSubmit({ actions });
+            fireEvent.click(button);
+            fireEvent.click(button);
+            expect(actions.postSignup).toHaveBeenCalledTimes(1);
+        });
+
+        it('displays spinner when there is an ongoing api call', () => {
+            const actions = {
+                postSignup: mockAsyncDelayed(),
+            }
+            const { queryByText } = setupForSubmit({ actions });
+            fireEvent.click(button);
+
+            const spinner = queryByText('Aguarde...');
+            expect(spinner).toBeInTheDocument();
+        });
+
+        it('hides spinner after api call finishes successfully', async () => {
+            const actions = {
+                postSignup: mockAsyncDelayed(),
+            }
+            const { queryByText } = setupForSubmit({ actions });
+            fireEvent.click(button);
+
+            const spinner = queryByText('Aguarde...');
+            await waitForElementToBeRemoved(spinner);
+
+            expect(spinner).not.toBeInTheDocument();
+        });
+
+        it('hides spinner after api call finishes with error', async () => {
+            const actions = {
+                postSignup: mockAsyncDelayedRejected(),
+            }
+            const { queryByText } = setupForSubmit({ actions });
+            fireEvent.click(button);
+
+            const spinner = queryByText('Aguarde...');
+            await waitForElementToBeRemoved(spinner);
+
+            expect(spinner).not.toBeInTheDocument();
+        });
     });
 });
+console.error = () => { };
