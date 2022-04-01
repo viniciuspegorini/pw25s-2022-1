@@ -1,5 +1,6 @@
 package br.edu.utfpr.pb.pw26s.server.model;
 
+import br.edu.utfpr.pb.pw26s.server.annotation.UniqueUsername;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -9,6 +10,7 @@ import javax.validation.constraints.Size;
 
 @Data
 @Entity
+// @Table(uniqueConstraints = @UniqueConstraint(columnNames = "username"))
 public class User {
 
     @Id
@@ -17,6 +19,7 @@ public class User {
 
     @NotNull(message = "{utfpr.user.username.constraints.NotNull.message}")
     @Size(min = 4, max = 255, message = "O tamanho deve ser entre {min} e {max}")
+    @UniqueUsername
     private String username;
 
     @NotNull

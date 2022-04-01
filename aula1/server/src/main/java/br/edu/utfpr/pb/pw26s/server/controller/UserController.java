@@ -34,7 +34,7 @@ public class UserController {
     ApiError handlerValidationException(MethodArgumentNotValidException exception,
                                         HttpServletRequest request) {
         Map<String, String> validationErrors = new HashMap<>();
-        for(FieldError error: exception.getBindingResult().getFieldErrors()) {
+        for (FieldError error : exception.getBindingResult().getFieldErrors()) {
             validationErrors.put(error.getField(), error.getDefaultMessage());
         }
         return new ApiError(HttpStatus.BAD_REQUEST.value(),
@@ -42,4 +42,18 @@ public class UserController {
                 request.getServletPath(),
                 validationErrors);
     }
+
+    /*@ExceptionHandler({org.springframework.dao.DataIntegrityViolationException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ApiError handlerValidationException(org.springframework.dao.DataIntegrityViolationException exception,
+                                        HttpServletRequest request) {
+        Map<String, String> validationErrors = new HashMap<>();
+
+        validationErrors.put("username", "Esse usuário já existe, escolha outro");
+
+        return new ApiError(HttpStatus.BAD_REQUEST.value(),
+                "validation error",
+                request.getServletPath(),
+                validationErrors);
+    }*/
 }

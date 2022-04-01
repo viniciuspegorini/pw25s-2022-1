@@ -1,4 +1,5 @@
 import React from "react";
+import Input from '../components/input';
 
 export class UserSignupPage extends React.Component {
     state = {
@@ -7,6 +8,7 @@ export class UserSignupPage extends React.Component {
         password: '',
         passwordRepeat: '',
         pendingApiCall: false,
+        errors: {},
     }
 
     onChangeDisplayName = (event) => {
@@ -35,12 +37,16 @@ export class UserSignupPage extends React.Component {
             password: this.state.password,
         }
         this.setState({ pendingApiCall: true });
-        this.props.actions.postSignup(user).then( response => {
+        this.props.actions.postSignup(user).then(response => {
             this.setState({ pendingApiCall: false });
         })
-        .catch(error => {
-            this.setState({ pendingApiCall: false });
-        });
+            .catch(apiError => {
+                let errors = { ...this.state.errors }
+                if (apiError.response.data && apiError.response.data.validationErrors) {
+                    errors = { ...apiError.response.data.validationErrors }
+                }
+                this.setState({ pendingApiCall: false, errors });
+            });
 
     }
 
@@ -49,11 +55,16 @@ export class UserSignupPage extends React.Component {
             <div className="container">
                 <h1 className="text-center">Sign Up</h1>
                 <div className="col-12 mb-3">
-                    <label>Informe o seu nome</label>
-                    <input className="form-control"
-                        type="text" placeholder="Informe o seu nome"
+                    <Input
+                        label="Informe o seu nome"
+                        type="text"
+                        placeholder="Informe o seu nome"
                         value={this.state.displayName}
-                        onChange={this.onChangeDisplayName} />
+                        onChange={this.onChangeDisplayName}
+                        hasError={this.state.errors.displayName && true}
+                        error={this.state.errors.displayName}
+                    />
+
                 </div>
                 <div className="col-12 mb-3">
                     <label>Informe o usuário</label>
@@ -82,7 +93,7 @@ export class UserSignupPage extends React.Component {
                         onClick={this.onClickSignup}
                     >
                         {this.state.pendingApiCall && (
-                            <div className="spinner-border text-light spinner-border-sm mr-sm-1" 
+                            <div className="spinner-border text-light spinner-border-sm mr-sm-1"
                                 role="status">
                                 <span className="visually-hidden">Aguarde...</span>
                             </div>

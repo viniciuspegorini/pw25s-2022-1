@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -165,6 +166,23 @@ public class UserControllerTest {
         ResponseEntity<ApiError> response = postSignup(new User(), ApiError.class);
         assertThat(response.getBody().getValidationErrors().size()).isEqualTo(3);
     }
+
+    @Test
+    public void postUser_whenAnotherUserHasSameUsername_receiveBadRequest() {
+        userRepository.save(createValidUser());
+        ResponseEntity<Object> response = postSignup(createValidUser(), Object.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void postUser_whenAnotherUserHasSameUsername_receiveMessageOfDuplicatedUsername() {
+        userRepository.save(createValidUser());
+        ResponseEntity<ApiError> response = postSignup(createValidUser(), ApiError.class);
+        Map<String, String> validationErrors = response.getBody().getValidationErrors();
+        assertThat(validationErrors.get("username")).isEqualTo("Username has already been used");
+    }
+
+
 
     public <T> ResponseEntity<T> postSignup(Object request, Class<T> responseType) {
         return testRestTemplate.postForEntity(URL_USERS, request, responseType);
