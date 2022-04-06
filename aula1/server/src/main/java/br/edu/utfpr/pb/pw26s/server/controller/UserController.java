@@ -29,6 +29,11 @@ public class UserController {
         return new GenericResponse("Registro salvo.");
     }
 
+    @GetMapping
+    String teste() {
+        return "TESTE";
+    }
+
     @ExceptionHandler({MethodArgumentNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     ApiError handlerValidationException(MethodArgumentNotValidException exception,

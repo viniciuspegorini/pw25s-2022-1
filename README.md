@@ -34,9 +34,9 @@
 O conteúdo do projeto é uma introdução sobre os *frameworks* **Spring, Spring Boot e Spring Data**.
 
 
-## Trabalho da disciplina:
+## Trabalhos da disciplina:
 
-##Projeto contendo no mínimo: 
+## Trabalho final contendo no mínimo: 
 
 Deverá ser desenvolvido uma aplicação WEB para controle financeiro pessoal.
 
