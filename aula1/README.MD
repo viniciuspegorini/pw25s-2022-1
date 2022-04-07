@@ -37,7 +37,13 @@ REST não é uma arquitetura, biblioteca ou framework, é simplesmente um  **mod
 REST não é uma arquitetura ou *framework* pronto, é apenas um contjunto de regras que serve como modelo para desenvolver uma API. Esse modelo foi criado por  Roy Fielding [5]  um dos principais responsáveis e criadores do protocolo HTTP, basicamente, tudo que está online utiliza o protocolo HTTP ou o HTTPS que é a evolução do mesmo.
 
 # React (front-end)
+O React é uma biblioteca JavaScript para criar interfaces de usuário. O React é **declarativo** fazendo com que a criação de UIs interativas seja uma tarefa fácil. Uma das premissas do React é que o desenvolvedor crie *views* simplificadas para cada estado da aplicação, e o React irá atualizar e renderizar de forma eficiente apenas os componentes necessários na medida em que os dados mudam. A criação de *views* declarativas fazem com que seu código seja mais previsível e simples de depurar [7].
 
+O React assim como outras bibliotecas e *frameworks* JavaScript é baseado em componentes. O que facilita gerenciar de maneira mais eficaz os diferentes módulos da aplicação. O React permite criar componentes encapsulados que gerenciam seu próprio estado, para então combinálo para formar UIs complexas.
+
+No React toda lógica do componente é escrita em JavaScript e não em templates, permitindo ao desenvolvedor passar diversos tipos de dados ao longo da sua aplicação e ainda manter o estado da aplicação fora do DOM.
+
+O React normalmente utiliza JSX (**JavaScript Syntax Extension**) para a criação dos componentes, que é uma extensão de sintaxe para JavaScript. A utilização do JSX e a criação de componentes será abordada mais abaixo desse texto.
 
 # Iniciando o projeto
 Durante as aulas será desenvolvido um projeto para controle de compra e venda de produtos. Vamos iniciar com o cadastro de usuários do sistema, tanto a API Rest quanto o cliente utilizando React. Então será realizada a etapa de autenticação dos usuários do sistema. Na sequência serão realizados os CRUDs de categoria, produto e compras.
@@ -68,7 +74,7 @@ Em dependências devem ser selecionados os *frameworks*:
 
 O projeto está configurado e pode ser realizado o download do mesmo e importado na IDE. O conteúdo do arquivo `pom.xml` pode ser visualizado em: [arquivo pom.xml](https://github.com/viniciuspegorini/pw25s-2022-1/blob/main/aula1/server/pom.xml).
 
-#### Estrutura do projeto (back-end)
+#### Estrutura do projeto back-end
 
 O projeto Spring Boot vêm com uma série de configurações inicias que não precisamos nos preocupar, iniciando com a classe principal da aplicação a **ServerApplication**, nela por meio da anotação **@SpringBootApplication** todas as configurações serão carregadas. O **Spring Security** por exemplo, já vem pré-configurado protegendo todas as URLs, como ainda não vamos configurar, é necesário adicionar a propriedade **exclude = SecurityAutoConfiguration.class**, dessa maneira o **SpringBoot** vai ignorar as configurações de segurança, na sequência do desenvolvimento essa configuração será alterada para o processo de autenticação e autorização funcionar. O banco de dados **H2** também já é criado por padrão nesse momento, ou seja, todas as configurações necessárias para o início do desenvolvimento estão prontas.
 
@@ -82,6 +88,7 @@ public class ServerApplication {
 ``` 
 
 #### Cadastro de Usuário (back-end)
+
 O desenvolvimento irá iniciar o cadastro de usuário o primeiro passo será criar o cadastro de um novo usuário. Para isso devemos criar nosso controller, entretanto como o desenvolvimento será realizado por meio de TDD, a primeira classe que vamos criar será a classe **UserControllerTest** dentro da pasta **/src/test**.
 ```java
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -310,7 +317,75 @@ public class UserService {
 }
 ```
 Com isso finalizamos essa etapa de desenvolvimento da API, as demais validações e tratamento de erros será realizado futuramente, o próximo passo será iniciar o desenvolvimento do lado cliente da aplicação.
-  
+
+#### Criação do projeto front-end
+Para criação da aplicação *front-end* com React será utilizada a ferramenta **Create React App**, a qual gera uma estrutura base para o projeto. Para utilizar a ferramenta é necessário abrir o **terminal** ou **cmd** navegar até a pasta na qual o projeto será criado e executar o comando:
+```cmd
+npx create-react-app client
+```
+O `npx` faz parte da instalação do **Node.js** e irá instalar o `create-react-app` caso ele não esteja instalado e após irá executá-lo. Com isso será criada uma pasta **client** e dentro dela todos os arquivos necessários para executar a aplicação.
+Para executar a aplicação pela primeira vez basta acessar a pasta client via **terminal** ou **cmd** e executar o comando:
+```cmd
+npm start
+```
+A aplicação será iniciada e poderá ser acessada no navegador por meio do endereço: **http://localhost:3000**.
+
+
+#### Estrutura do projeto front-end
+
+Entendendo a estrutura do projeto criado:
+- **node_modules**: pasta com as dependências do projeto.
+- **public**: pasta com o único arquivo HTML da aplicação, o index.html.
+	- **index.html**: é o único arquivo HTML da aplicação e é obrigatório. Não será necessário modificá-lo e deve ser mantida a div _root_, pois o conteúdo dinâmico da aplicação será exibido dentro dessa div.
+- **src**: pasta com os códigos do projeto.
+	-   **index.js**: esse arquivo declara a renderização da aplicação utilizando a biblioteca _react-dom_. Esse arquivo não precisa ser modificado, ele serve de _entrypoint_ da aplicação e por isso deve ter a configuração mínima para tal.
+	- **App.js**: é um componente componente React que vem criado no projeto inicial. Ao abrir o arquivo, é possível observar que existe código JSX dentro dele. Esse código é retornado pelo método _render()_, que é padrão de todos os objetos  _Component_  do React. Ele retorna a representação HTML daquele componente que será exibida no navegador.
+	- **App.test.js**: é o arquivo de testes para o componente _App.js_.
+	- **App.css**: é o arquivo com os estilos CSS para o componente _App.js_.
+- **package.json**: arquivo de dependências do projeto. Todo projeto que utiliza o NodeJS precisa desse arquivo. As principais dependências do React já estão declaradas assim como os scripts de deploy da aplicação.
+
+#### Cadastro de Usuário (front-end)
+
+Depois de criado o projeto é possível iniciar o desenvolvimento dos novos componentes. Abrindo um novo **terminal/cmd** é possível executar os testes da aplicação, por meio do comando:
+```cmd
+npm test
+```
+O próximo passo é abrir o projeto na **IDE** escolhida e iniciar a criação do cadastro de usuários. Dentro da pasta **/src** criar a pasta **/pages**. E dentro dessa pasta os arquivos:
+- UserSignupPage.spec.js
+- UserSignupPage.js
+Ao salvar esses arquivos o terminal que está executando os testes irá apontar um erro, pois todo o arquivo de teste (**UserSignupPage.spec.js**) deve ter pelo menos um caso de teste escrito. Como o desenvolvimento está sendo realizado com TDD, o próximo passo é criar esse teste. Começando com a importação do _React_ o passo seguinte é criar os rótulos do arquivo de teste por meio do método _describe()_, ele serve somente para melhorar a visualização dos testes no **terminal/cmd**.  O primeiro teste criado será o ***has header of Sign Up***, nele vamos verificar se nosso documento possui uma ***tag*** HTML com o texto **Sign Up**. Sim, serão realizados testes **e2e** [8] via Jest [9], por isso não estamos procurando por elementos dentro do nosso componente em JSX e sim por HTML, pois estamos preocupados em simular o comportamento do usuário. Ao salvar o documento o **terminal/cmd** executando os testes irá acusar um erro, e o próximo passo é resolvê-lo.
+
+```javascript
+import  React  from  "react";
+import  UserSignupPage  from  "./UserSignupPage";
+
+describe('UserSignupPage', () => {
+	describe('Layout', () => {
+		it('has header of Sign Up', () => {**
+			const { container } = render(<UserSignupPage />); 
+			const header = container.querySelector('h1');
+			expect(header).toHaveTextContent('Sign Up');
+		});
+	});
+});
+```
+
+Para resolver o erro é necessário fazer ajustes no componente que será desenvolvido no arquivo **UserSignUpPage.js**.  É necessário importar o _React_, então é criada a classe que vai conter o componente. Esse componente irá herdar as características de _React.Component_ e o método _render()_ será responsável por fazer o _render_ do código JSX contido nele. Esse método irá retornar uma _tag_ `<div>` contendo uma _tag_ `<h1>` com o texto **Sign Up**, com isso o primeiro teste irá passar, e no **terminal/cmd** não aparecerão outros erros para resolver.
+```javascript
+import React from "react";
+
+export class UserSignupPage extends React.Component{
+	render() {
+		return (
+			<div>
+				<h1>Sign Up</h1>
+			</div>
+		)
+	}
+}
+export default UserSignupPage;
+```
+
 # Referências
 [1] Spring Framework, https://spring.io/.
 
@@ -321,4 +396,11 @@ Com isso finalizamos essa etapa de desenvolvimento da API, as demais validaçõe
 [4] Spring Data JPA - Disponível em: https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#reference
 
 [5] Fielding, Roy. Architectural Styles and the Design of Network-based Software Architectures  Disponível em: https://www.ics.uci.edu/~fielding/pubs/dissertation/fielding_dissertation.pdf 
+
 [6] BCryptPasswordEncoder. Disponível em: https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/crypto/bcrypt/BCryptPasswordEncoder.html
+
+[7] React. Disponível em: https://pt-br.reactjs.org/.
+
+[8] e2e testing. Disponível em: https://reactjs.org/docs/testing.html
+
+[9] Jest. Disponível em:  https://jestjs.io/
