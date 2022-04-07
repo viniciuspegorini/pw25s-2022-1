@@ -385,6 +385,149 @@ export class UserSignupPage extends React.Component{
 }
 export default UserSignupPage;
 ```
+Na sequência será criado um teste para verificar a existência dos campos no formulário de cadastro de um novo usuário. O primeiro campo que deverá constar no formulário é o campo para o usuário informar o seu _nome_ (_displayName_), para verificar esse campo será criado o teste ***has input for display name***.  Esse teste irá verificar se o componente **UserSignupPage** possui uma _tag_ do tipo **input** com **placeholder** contendo o texto **Informe seu nome**. Agora deverá ser resolvido o teste.
+
+```javascript
+import  React  from  "react";
+import  UserSignupPage  from  "./UserSignupPage";
+
+describe('UserSignupPage', () => {
+	describe('Layout', () => {
+		it('has header of Sign Up', () => {**
+			const { container } = render(<UserSignupPage />); 
+			const header = container.querySelector('h1');
+			expect(header).toHaveTextContent('Sign Up');
+		});
+		
+		it('has input for display name', () => {
+			const { queryByPlaceholderText } = render(<UserSignupPage />);
+			const displayNameInput = queryByPlaceholderText('Informe seu nome');
+			expect(displayNameInput).toBeInTheDocument();
+		});
+	});
+});
+```
+
+Para resolver o teste basta adicionar o componente **UserSignupPage** uma _tag_ **input** com as características especificadas.
+
+```jsx
+import React from "react";
+
+export class UserSignupPage extends React.Component{
+	render() {
+		return (
+			<div>
+				<h1>Sign Up</h1>
+				<div>
+					<input placeholder="Informe seu nome" />
+				</div>
+			</div>
+		)
+	}
+}
+export default UserSignupPage;
+```
+
+No arquivo [UserSignupPage.spec.js](https://github.com/viniciuspegorini/pw25s-2022-1/blob/main/aula1/client/src/pages/UserSignupPage.spec.js) estão os testes: ***has input for username*** e ***has input for password***, ambos seguem a mesma lógica.
+
+Verificar se o campo senha está exibindo o texto ao digitar é importante, pois uma _tag_ do tipo **password** evita que os caracteres que estão sendo digitados pelo usuário fiquem visíveis. Então vamos garantir que temos um campo do tipo **password** criando um novo teste dentro do rótulo _describe('Layout', () => {...})_. Nesse teste a função _queryByPlaceholderText()_ procura pelo **input** que irá receber a senha e verifica se ele tem o **type="password"**.
+
+```javascript
+	\\...
+	it('has password type for password input', () => {
+		const { queryByPlaceholderText } = render(<UserSignupPage />);
+		const passwordInput = queryByPlaceholderText('Informe sua senha');
+		expect(passwordInput.type).toBe('password');
+	});
+	\\...
+```
+Para resolver o teste, basta adicionar o **type="password"** no campo de senha.
+```jsx
+\...
+<div>
+	<input type="password" placeholder="Confirme sua senha" />
+</div>
+\...
+```
+No arquivo [UserSignupPage.spec.js](https://github.com/viniciuspegorini/pw25s-2022-1/blob/main/aula1/client/src/pages/UserSignupPage.spec.js) estão os testes: ***has input for password repeat*** e ***has password type for password repeat input***, eles foram adicionados para o usuário ter um campo para confirmar a senha. O teste seguinte verifica se existe um componente para o usuário fazer o envio dos dados, ou seja, um **button**.
+
+```javascript
+	\...
+	it('has submit button', () => {
+		const { container } = render(<UserSignupPage />);
+		const button = container.querySelector('button');
+		expect(button).toBeInTheDocument();
+	});
+	\...
+```
+Basta adicionar um componente do tipo **button** no componente **UserSignupPage**.
+```jsx
+	<div>
+		<button>Cadastrar</button>
+	<div>
+```
+Os testes para verificar se todos os foram adicionados no nosso componente foram criados e estão passando, futuras alterações no código desse componente não devem interferir no resultado dos testes. Os testes criados a seguir irão verificar o processo de interação do usuário com o componente e como os dados são armazenados no estado (_state_) do mesmo. Os novos testes ficarão dentro do rótulo _Interactions_.
+```javascript
+\\...
+describe('UserSignupPage', () => {
+	describe('Layout', () => {
+		\\...
+	});
+	describe('Interactions', () => {
+		\\...
+	});
+});
+```
+O primeiro teste de interação verifica se o valor digitado pelo usuário no campo **displayName** fica armazenado no _input_.
+
+```javascript
+\\...
+describe('Interactions', () => {
+	it('sets the displayName value into state', () => {
+		const { queryByPlaceholderText } = render(<UserSignupPage />);
+		const displayNameInput = queryByPlaceholderText('Informe seu nome');
+		const changeEvent = {
+			target: {
+				value: 'my-display-name'
+			}
+		};
+		fireEvent.change(displayNameInput, changeEvent);
+		expect(displayNameInput).toHaveValue('my-display-name');
+	});
+});
+\\...
+```
+O teste está funcionando, o valor está atribuído ao _input_, entretanto, ainda não conseguimos fazer nada com esse valor, agora ele será armazenado no _State_ do componente. Ao declarar o ***displayName*** no _State_ e o ***value={this.state.displayName}*** no _input_ e salvar, o teste vai gerar erro, pois o valor do _State_ não está sendo atualizado ao digitar novos valores no componente. Para resolver foi criado a função ***onChangeDisplayName()*** e a mesma foi adicionada no método _onChange()_ do _input_ ***onChange={this.onChangeDisplayName}***. Agora sim, o teste vai passar e os valores atribuidos ao _input_ será armazenado no _State_.
+```jsx
+import React from "react";
+
+export class UserSignupPage extends React.Component{
+	export default UserSignupPage;
+	state = {
+		displayName: '',
+	}
+	onChangeDisplayName = (event) => {
+		const value = event.target.value;
+		this.setState({displayName: value});
+	}
+	render() {
+		return (
+			<div>
+				<h1>Sign Up</h1>
+				<div>
+					<input placeholder="Informe seu nome" 
+						value={this.state.displayName} 
+						onChange={this.onChangeDisplayName}
+					/>
+				</div>				
+				\... demais inputs e button
+			</div>
+		)
+	}
+}
+```
+O próximo passo é repetir o processo para todos os componentes do tipo _input_, inicialmente criando o teste e depois fazendo as alterações no componente. Conforme pode ser observado nos arquivos [UserSignupPage.spec.js](https://github.com/viniciuspegorini/pw25s-2022-1/blob/main/aula1/client/src/pages/UserSignupPage.spec.js) e [UserSignupPage.js](https://github.com/viniciuspegorini/pw25s-2022-1/blob/main/aula1/client/src/pages/UserSignupPage.js).
+
 
 # Referências
 [1] Spring Framework, https://spring.io/.
