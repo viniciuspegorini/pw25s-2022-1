@@ -32,10 +32,16 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
             .and()
             .authorizeRequests()
                 .antMatchers(HttpMethod.POST,"/users").permitAll()
-                .antMatchers(HttpMethod.GET,"/users").hasAnyRole("ADMIN")
                 .anyRequest().authenticated()
             .and()
                 // Filters
+                .addFilter(
+                        new JWTAuthenticationFilter(authenticationManager(),
+                                getApplicationContext()))
+                .addFilter(
+                        new JWTAuthorizationFilter(authenticationManager(),
+                                getApplicationContext())
+                )
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
