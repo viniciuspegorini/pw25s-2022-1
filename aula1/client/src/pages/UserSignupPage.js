@@ -1,4 +1,5 @@
 import React from "react";
+import ButtonWithProgress from '../components/ButtonWithProgress';
 import Input from '../components/input';
 
 export class UserSignupPage extends React.Component {
@@ -58,7 +59,7 @@ export class UserSignupPage extends React.Component {
                     <Input
                         label="Informe o seu nome"
                         type="text"
-                        placeholder="Informe o seu nome"
+                        placeholder="Informe seu nome"
                         value={this.state.displayName}
                         onChange={this.onChangeDisplayName}
                         hasError={this.state.errors.displayName && true}
@@ -76,7 +77,7 @@ export class UserSignupPage extends React.Component {
                 <div className="col-12 mb-3">
                     <label>Informe o sua senha</label>
                     <input className="form-control"
-                        type="password" placeholder="Informe a sua senha"
+                        type="password" placeholder="Informe sua senha"
                         value={this.state.password}
                         onChange={this.onChangePassword} />
                 </div>
@@ -88,18 +89,12 @@ export class UserSignupPage extends React.Component {
                         onChange={this.onChangePasswordRepeat} />
                 </div>
                 <div className="text-center">
-                    <button className="btn btn-primary"
+                    <ButtonWithProgress
                         disabled={this.state.pendingApiCall}
                         onClick={this.onClickSignup}
-                    >
-                        {this.state.pendingApiCall && (
-                            <div className="spinner-border text-light spinner-border-sm mr-sm-1"
-                                role="status">
-                                <span className="visually-hidden">Aguarde...</span>
-                            </div>
-                        )}
-                        Cadastrar
-                    </button>
+                        pendingApiCall={this.state.pendingApiCall}
+                        text="Cadastrar"
+                    />
                 </div>
             </div>
         )

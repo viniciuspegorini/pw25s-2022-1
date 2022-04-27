@@ -1,43 +1,44 @@
-import React from 'react';
+import React from "react";
 import {
   render,
   fireEvent,
   waitForElementToBeRemoved,
-} from '@testing-library/react';
-import { LoginPage } from './LoginPage';
+} from "@testing-library/react";
+import { LoginPage } from "./LoginPage";
+import AuthService from "../services/auth.service";
 
-describe('LoginPage', () => {
-  describe('Layout', () => {
-    it('has header of Login', () => {
+describe("LoginPage", () => {
+  describe("Layout", () => {
+    it("has header of Login", () => {
       const { container } = render(<LoginPage />);
-      const header = container.querySelector('h1');
-      expect(header).toHaveTextContent('Login');
+      const header = container.querySelector("h1");
+      expect(header).toHaveTextContent("Login");
     });
 
-    it('has input for username', () => {
+    it("has input for username", () => {
       const { queryByPlaceholderText } = render(<LoginPage />);
-      const usernameInput = queryByPlaceholderText('Your username');
+      const usernameInput = queryByPlaceholderText("Your username");
       expect(usernameInput).toBeInTheDocument();
     });
 
-    it('has input for password', () => {
+    it("has input for password", () => {
       const { queryByPlaceholderText } = render(<LoginPage />);
-      const passwordInput = queryByPlaceholderText('Your password');
+      const passwordInput = queryByPlaceholderText("Your password");
       expect(passwordInput).toBeInTheDocument();
     });
 
-    it('has password type for password input', () => {
+    it("has password type for password input", () => {
       const { queryByPlaceholderText } = render(<LoginPage />);
-      const passwordInput = queryByPlaceholderText('Your password');
-      expect(passwordInput.type).toBe('password');
+      const passwordInput = queryByPlaceholderText("Your password");
+      expect(passwordInput.type).toBe("password");
     });
-    it('has login button', () => {
+    it("has login button", () => {
       const { container } = render(<LoginPage />);
-      const button = container.querySelector('button');
+      const button = container.querySelector("button");
       expect(button).toBeInTheDocument();
     });
   });
-  describe('Interactions', () => {
+  describe("Interactions", () => {
     const changeEvent = (content) => {
       return {
         target: {
@@ -56,175 +57,158 @@ describe('LoginPage', () => {
     };
     let usernameInput, passwordInput, button;
 
-    const setupForSubmit = (props) => {
-      const rendered = render(<LoginPage {...props} />);
+    const setupForSubmit = () => {
+      const rendered = render(<LoginPage />);
       const { container, queryByPlaceholderText } = rendered;
 
-      usernameInput = queryByPlaceholderText('Your username');
-      fireEvent.change(usernameInput, changeEvent('my-user-name'));
-      passwordInput = queryByPlaceholderText('Your password');
-      fireEvent.change(passwordInput, changeEvent('P4ssword'));
-      button = container.querySelector('button');
+      usernameInput = queryByPlaceholderText("Your username");
+      fireEvent.change(usernameInput, changeEvent("my-user-name"));
+      passwordInput = queryByPlaceholderText("Your password");
+      fireEvent.change(passwordInput, changeEvent("P4ssword"));
+      button = container.querySelector("button");
       return rendered;
     };
 
-    it('sets the username value into state', () => {
+    it("sets the username value into state", () => {
       const { queryByPlaceholderText } = render(<LoginPage />);
-      const usernameInput = queryByPlaceholderText('Your username');
-      fireEvent.change(usernameInput, changeEvent('my-user-name'));
-      expect(usernameInput).toHaveValue('my-user-name');
+      const usernameInput = queryByPlaceholderText("Your username");
+      fireEvent.change(usernameInput, changeEvent("my-user-name"));
+      expect(usernameInput).toHaveValue("my-user-name");
     });
-    it('sets the password value into state', () => {
+    it("sets the password value into state", () => {
       const { queryByPlaceholderText } = render(<LoginPage />);
-      const passwordInput = queryByPlaceholderText('Your password');
-      fireEvent.change(passwordInput, changeEvent('P4ssword'));
-      expect(passwordInput).toHaveValue('P4ssword');
+      const passwordInput = queryByPlaceholderText("Your password");
+      fireEvent.change(passwordInput, changeEvent("P4ssword"));
+      expect(passwordInput).toHaveValue("P4ssword");
     });
-    it('calls postLogin when the actions are provided in props and input fields have value', () => {
-      const actions = {
-        postLogin: jest.fn().mockResolvedValue({}),
-      };
-      setupForSubmit({ actions });
+    it("calls postLogin when the actions are provided in props and input fields have value", () => {
+      AuthService.login = jest.fn().mockResolvedValue({});
+      setupForSubmit();
       fireEvent.click(button);
-      expect(actions.postLogin).toHaveBeenCalledTimes(1);
+      expect(AuthService.login).toHaveBeenCalledTimes(1);
     });
-    it('does not throw exception when clicking the button when actions not provided in props', () => {
+    it("does not throw exception when clicking the button when actions not provided in props", () => {
       setupForSubmit();
       expect(() => fireEvent.click(button)).not.toThrow();
     });
 
-    it('calls postLogin with credentials in body', () => {
-      const actions = {
-        postLogin: jest.fn().mockResolvedValue({}),
-      };
-      setupForSubmit({ actions });
+    it("calls postLogin with credentials in body", () => {
+      AuthService.login = jest.fn().mockResolvedValue({});
+      setupForSubmit();
       fireEvent.click(button);
 
       const expectedUserObject = {
-        username: 'my-user-name',
-        password: 'P4ssword',
+        username: "my-user-name",
+        password: "P4ssword",
       };
 
-      expect(actions.postLogin).toHaveBeenCalledWith(expectedUserObject);
+      expect(AuthService.login).toHaveBeenCalledWith(expectedUserObject);
     });
 
-    it('enables the button when username and password is not empty', () => {
+    it("enables the button when username and password is not empty", () => {
       setupForSubmit();
       expect(button).not.toBeDisabled();
     });
-    it('disables the button when username is empty', () => {
+    it("disables the button when username is empty", () => {
       setupForSubmit();
-      fireEvent.change(usernameInput, changeEvent(''));
+      fireEvent.change(usernameInput, changeEvent(""));
       expect(button).toBeDisabled();
     });
-    it('disables the button when password is empty', () => {
+    it("disables the button when password is empty", () => {
       setupForSubmit();
-      fireEvent.change(passwordInput, changeEvent(''));
+      fireEvent.change(passwordInput, changeEvent(""));
       expect(button).toBeDisabled();
     });
-    it('displays alert when login fails', async () => {
-      const actions = {
-        postLogin: jest.fn().mockRejectedValue({
-          response: {
-            data: {
-              message: 'Login failed',
-            },
+    it("displays alert when login fails", async () => {
+      const { findByText } = setupForSubmit();
+      AuthService.login = jest.fn().mockRejectedValue({
+        response: {
+          data: {
+            message: "Login failed",
           },
-        }),
-      };
-      const { findByText } = setupForSubmit({ actions });
+        },
+      });
       fireEvent.click(button);
 
-      const alert = await findByText('Login failed');
+      const alert = await findByText("Login failed");
       expect(alert).toBeInTheDocument();
     });
-    it('clears alert when user changes username', async () => {
-      const actions = {
-        postLogin: jest.fn().mockRejectedValue({
-          response: {
-            data: {
-              message: 'Login failed',
-            },
+    it("clears alert when user changes username", async () => {
+      const { findByText } = setupForSubmit();
+      AuthService.login = jest.fn().mockRejectedValue({
+        response: {
+          data: {
+            message: "Login failed",
           },
-        }),
-      };
-      const { findByText } = setupForSubmit({ actions });
+        },
+      });
       fireEvent.click(button);
 
-      const alert = await findByText('Login failed');
-      fireEvent.change(usernameInput, changeEvent('updated-username'));
+      const alert = await findByText("Login failed");
+      fireEvent.change(usernameInput, changeEvent("updated-username"));
 
       expect(alert).not.toBeInTheDocument();
     });
-    it('clears alert when user changes password', async () => {
-      const actions = {
-        postLogin: jest.fn().mockRejectedValue({
-          response: {
-            data: {
-              message: 'Login failed',
-            },
+    it("clears alert when user changes password", async () => {
+      const { findByText } = setupForSubmit();
+      AuthService.login = jest.fn().mockRejectedValue({
+        response: {
+          data: {
+            message: "Login failed",
           },
-        }),
-      };
-      const { findByText } = setupForSubmit({ actions });
+        },
+      });
       fireEvent.click(button);
-      const alert = await findByText('Login failed');
-      fireEvent.change(passwordInput, changeEvent('updated-P4ssword'));
+      const alert = await findByText("Login failed");
+      fireEvent.change(passwordInput, changeEvent("updated-P4ssword"));
       expect(alert).not.toBeInTheDocument();
     });
 
-    it('does not allow user to click the Login button when there is an ongoing api call', () => {
-      const actions = {
-        postLogin: mockAsyncDelayed(),
-      };
-      setupForSubmit({ actions });
+    it("does not allow user to click the Login button when there is an ongoing api call", () => {
+      AuthService.login = jest.fn().mockResolvedValue({});
+      setupForSubmit();
       fireEvent.click(button);
 
       fireEvent.click(button);
-      expect(actions.postLogin).toHaveBeenCalledTimes(1);
+      expect(AuthService.login).toHaveBeenCalledTimes(1);
     });
 
-    it('displays spinner when there is an ongoing api call', () => {
-      const actions = {
-        postLogin: mockAsyncDelayed(),
-      };
-      const { queryByText } = setupForSubmit({ actions });
+    it("displays spinner when there is an ongoing api call", () => {
+      AuthService.login = jest.fn().mockResolvedValue({});
+      const { queryByText } = setupForSubmit();
       fireEvent.click(button);
 
-      const spinner = queryByText('Aguarde...');
+      const spinner = queryByText("Aguarde...");
       expect(spinner).toBeInTheDocument();
     });
 
-    it('hides spinner after api call finishes successfully', async () => {
-      const actions = {
-        postLogin: mockAsyncDelayed(),
-      };
-      const { queryByText } = setupForSubmit({ actions });
+    it("hides spinner after api call finishes successfully", async () => {
+      AuthService.login = jest.fn().mockResolvedValue({});
+
+      const { queryByText } = setupForSubmit();
       fireEvent.click(button);
 
-      const spinner = queryByText('Aguarde...');
+      const spinner = queryByText("Aguarde...");
       await waitForElementToBeRemoved(spinner);
       expect(spinner).not.toBeInTheDocument();
     });
-    it('hides spinner after api call finishes with error', async () => {
-      const actions = {
-        postLogin: jest.fn().mockImplementation(() => {
-          return new Promise((resolve, reject) => {
-            setTimeout(() => {
-              reject({
-                response: { data: {} },
-              });
-            }, 300);
-          });
-        }),
-      };
-      const { queryByText } = setupForSubmit({ actions });
+    it("hides spinner after api call finishes with error", async () => {
+      AuthService.login = jest.fn().mockImplementation(() => {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            reject({
+              response: { data: {} },
+            });
+          }, 300);
+        });
+      });
+      const { queryByText } = setupForSubmit();
       fireEvent.click(button);
 
-      const spinner = queryByText('Aguarde...');
+      const spinner = queryByText("Aguarde...");
       await waitForElementToBeRemoved(spinner);
       expect(spinner).not.toBeInTheDocument();
-    });    
+    });
   });
 });
 
