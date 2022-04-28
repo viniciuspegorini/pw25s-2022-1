@@ -1,88 +1,78 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ButtonWithProgress from '../components/ButtonWithProgress';
 import Input from '../components/input';
+import AuthService from '../services/auth.service';
 
-export class LoginPage extends React.Component {
-  state = {
-    username: '',
-    password: '',
-    apiError: undefined,
-    pendingApiCall: false
-  }
 
-  onChangeUsername = (event) => {
-    const value = event.target.value;
-    this.setState({ username: value, apiError: undefined });
-  }
-  onChangePassword = (event) => {
-    const value = event.target.value;
-    this.setState({ password: value, apiError: undefined });
-  }
+export const LoginPage = (props) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [apiError, setApiError] = useState();
+  const [pendingApiCall, setPendingApiCall] = useState(false);
 
-  onClickLogin = () => {
-    this.setState({ pendingApiCall: true });
+  useEffect(() =>{
+    setApiError();
+  }, [username, password]);
+ 
+  const onClickLogin = () => {
+    setPendingApiCall(true);
     const body = {
-      username: this.state.username,
-      password: this.state.password
+      username,
+      password
     };
-    this.props.actions.postLogin(body).then((response) => {
-      this.setState({ pendingApiCall: false });
+    AuthService.login(body).then((response) => {
+      setPendingApiCall(false);
     }).catch((error) => {
-      this.setState({ pendingApiCall: false, apiError: 'Login failed' });
+      setApiError('Login failed');
+      setPendingApiCall(false);
     });
   }
 
-  render() {
-    let disableSubmit = false;
-    if (this.state.username === '') {
-      disableSubmit = true;
-    }
-    if (this.state.password === '') {
-      disableSubmit = true;
-    }
-    return (
-      <div className="container">
-        <h1 className="text-center">Login</h1>
-        <div className="col-12 mb-3">
-          <Input
-            label="Informe o usuário"
-            placeholder="Your username"
-            value={this.state.username}
-            onChange={this.onChangeUsername}
-          />
-        </div>
-        <div className="col-12 mb-3">
-          <Input
-            label="Informe a senha"
-            placeholder="Your password"
-            type="password"
-            value={this.state.password}
-            onChange={this.onChangePassword}
-          />
-        </div>
-        {this.state.apiError && (
-          <div className="col-12 mb-3">
-            <div className="alert alert-danger">{this.state.apiError}</div>
-          </div>
-        )}
-
-        <div className="text-center">
-          <ButtonWithProgress
-            disabled={this.state.pendingApiCall || disableSubmit}
-            onClick={this.onClickLogin}
-            pendingApiCall={this.state.pendingApiCall}
-            text="Login"
-          />
-        </div>
+  let disableSubmit = false;
+  if (username === '') {
+    disableSubmit = true;
+  }
+  if (password === '') {
+    disableSubmit = true;
+  }
+  return (
+    <div className="container">
+      <h1 className="text-center">Login</h1>
+      <div className="col-12 mb-3">
+        <Input
+          label="Informe o usuário"
+          placeholder="Your username"
+          value={username}
+          onChange={ (event) => { setUsername(event.target.value) }}
+        />
       </div>
-    )
-  }
-}
+      <div className="col-12 mb-3">
+        <Input
+          label="Informe a senha"
+          placeholder="Your password"
+          type="password"
+          value={password}
+          onChange={ (event) => { setPassword(event.target.value) }}
+        />
+      </div>
+      {apiError && (
+        <div className="col-12 mb-3">
+          <div className="alert alert-danger">{apiError}</div>
+        </div>
+      )}
 
-LoginPage.defaultProps = {
-  actions: {
-    postLogin: () => new Promise((resolve, reject) => resolve({}))
-  }
+      <div className="text-center">
+        <ButtonWithProgress
+          disabled={pendingApiCall || disableSubmit}
+          onClick={onClickLogin}
+          pendingApiCall={pendingApiCall}
+          text="Login"
+        />
+      </div>
+    </div>
+  );
 };
+
+LoginPage.defaultProps = {};
 
 export default LoginPage;

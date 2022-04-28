@@ -13,7 +13,8 @@ const login = (user) => {
       }
       return response.data;
     })
-    .catch(() => {
+    .catch((error) => {
+      console.log(error);
       return "Login failed";
     });
 };
