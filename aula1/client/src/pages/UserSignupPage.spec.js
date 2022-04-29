@@ -7,43 +7,47 @@ import {
 import "@testing-library/jest-dom/extend-expect";
 import { UserSignupPage } from "./UserSignupPage";
 import AuthService from "../services/auth.service";
+import { BrowserRouter } from 'react-router-dom';
 
 describe("UserSignupPage", () => {
+  const getUserSignupPage = () => {
+    return (<BrowserRouter><UserSignupPage /></BrowserRouter>);
+  }
   describe("Layout", () => {
     it("has header of Sign Up", () => {
-      const { container } = render(<UserSignupPage />);
+      const { container } = render(getUserSignupPage());
       const header = container.querySelector("h1");
       expect(header).toHaveTextContent("Sign Up");
     });
 
     it("has input for display name", () => {
-      const { queryByPlaceholderText } = render(<UserSignupPage />);
+      const { queryByPlaceholderText } = render(getUserSignupPage());
       const displayNameInput = queryByPlaceholderText("Informe seu nome");
       expect(displayNameInput).toBeInTheDocument();
     });
 
     it("has input for username", () => {
-      const { queryByPlaceholderText } = render(<UserSignupPage />);
+      const { queryByPlaceholderText } = render(getUserSignupPage());
       const usernameInput = queryByPlaceholderText("Informe o usuário");
       expect(usernameInput).toBeInTheDocument();
     });
     it("has input for password", () => {
-      const { queryByPlaceholderText } = render(<UserSignupPage />);
+      const { queryByPlaceholderText } = render(getUserSignupPage());
       const passwordInput = queryByPlaceholderText("Informe sua senha");
       expect(passwordInput).toBeInTheDocument();
     });
     it("has input for password repeat", () => {
-      const { queryByPlaceholderText } = render(<UserSignupPage />);
+      const { queryByPlaceholderText } = render(getUserSignupPage());
       const passwordRepeat = queryByPlaceholderText("Confirme sua senha");
       expect(passwordRepeat).toBeInTheDocument();
     });
     it("has password type for password repeat input", () => {
-      const { queryByPlaceholderText } = render(<UserSignupPage />);
+      const { queryByPlaceholderText } = render(getUserSignupPage());
       const passwordRepeat = queryByPlaceholderText("Confirme sua senha");
       expect(passwordRepeat.type).toBe("password");
     });
     it("has submit button", () => {
-      const { container } = render(<UserSignupPage />);
+      const { container } = render(getUserSignupPage());
       const button = container.querySelector("button");
       expect(button).toBeInTheDocument();
     });
@@ -69,7 +73,7 @@ describe("UserSignupPage", () => {
 
     let button, displayNameInput, usernameInput, passwordInput, passwordRepeat;
     const setupForSubmit = () => {
-      const rendered = render(<UserSignupPage />);
+      const rendered = render(getUserSignupPage());
 
       const { container, queryByPlaceholderText } = rendered;
 
@@ -89,28 +93,28 @@ describe("UserSignupPage", () => {
     };
 
     it("sets the displayName value into state", () => {
-      const { queryByPlaceholderText } = render(<UserSignupPage />);
+      const { queryByPlaceholderText } = render(getUserSignupPage());
       const displayNameInput = queryByPlaceholderText("Informe seu nome");
       fireEvent.change(displayNameInput, changeEvent("my-display-name"));
       expect(displayNameInput).toHaveValue("my-display-name");
     });
 
     it("sets the username value into state", () => {
-      const { queryByPlaceholderText } = render(<UserSignupPage />);
+      const { queryByPlaceholderText } = render(getUserSignupPage());
       const usernameInput = queryByPlaceholderText("Informe o usuário");
       fireEvent.change(usernameInput, changeEvent("my-username"));
       expect(usernameInput).toHaveValue("my-username");
     });
 
     it("sets the password value into state", () => {
-      const { queryByPlaceholderText } = render(<UserSignupPage />);
+      const { queryByPlaceholderText } = render(getUserSignupPage());
       const passwordInput = queryByPlaceholderText("Informe sua senha");
       fireEvent.change(passwordInput, changeEvent("P4ssword"));
       expect(passwordInput).toHaveValue("P4ssword");
     });
 
     it("sets the password repeat value into state", () => {
-      const { queryByPlaceholderText } = render(<UserSignupPage />);
+      const { queryByPlaceholderText } = render(getUserSignupPage());
       const passwordRepeat = queryByPlaceholderText("Confirme sua senha");
       fireEvent.change(passwordRepeat, changeEvent("P4ssword"));
       expect(passwordRepeat).toHaveValue("P4ssword");

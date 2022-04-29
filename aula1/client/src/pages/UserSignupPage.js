@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from 'react-router-dom';
 import ButtonWithProgress from '../components/ButtonWithProgress';
 import Input from '../components/input';
 import AuthService from '../services/auth.service';
@@ -12,6 +13,8 @@ export const UserSignupPage = (props) => {
     });
     const [pendingApiCall, setPendingApiCall] = useState(false);
     const [errors, setErrors] = useState({});
+
+    const navigate = useNavigate();
 
     const onChange = (event) => {
         const { value, name } = event.target;
@@ -39,6 +42,7 @@ export const UserSignupPage = (props) => {
         setPendingApiCall(true);
         AuthService.signup(user).then(response => {
             setPendingApiCall(false);
+            navigate('/');
         })
             .catch(apiError => {
                 if (apiError.response.data && apiError.response.data.validationErrors) {
@@ -75,10 +79,10 @@ export const UserSignupPage = (props) => {
                     name="username"
                     label="Informe o usuário"
                     className="form-control"
-                    type="text" 
+                    type="text"
                     placeholder="Informe o usuário"
                     value={form.username}
-                    onChange={onChange} 
+                    onChange={onChange}
                     hasError={errors.username && true}
                     error={errors.username}
                 />
@@ -88,12 +92,12 @@ export const UserSignupPage = (props) => {
                     name="password"
                     label="Informe o sua senha"
                     className="form-control"
-                    type="password" 
+                    type="password"
                     placeholder="Informe sua senha"
                     value={form.password}
                     onChange={onChange}
                     hasError={errors.password && true}
-                    error={errors.password}    
+                    error={errors.password}
                 />
             </div>
             <div className="col-12 mb-3">
@@ -106,7 +110,7 @@ export const UserSignupPage = (props) => {
                     value={form.passwordRepeat}
                     onChange={onChange}
                     hasError={passwordRepeatError && true}
-                    error={passwordRepeatError} 
+                    error={passwordRepeatError}
                 />
             </div>
             <div className="text-center">
@@ -116,6 +120,10 @@ export const UserSignupPage = (props) => {
                     pendingApiCall={pendingApiCall}
                     text="Cadastrar"
                 />
+            </div>
+
+            <div className="text-center">
+                já possui cadastro? <Link to='/'>Login</Link>
             </div>
         </div>
     );

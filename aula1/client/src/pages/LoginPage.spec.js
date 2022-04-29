@@ -6,34 +6,38 @@ import {
 } from "@testing-library/react";
 import { LoginPage } from "./LoginPage";
 import AuthService from "../services/auth.service";
+import { BrowserRouter } from 'react-router-dom';
 
 describe("LoginPage", () => {
+  const getLoginPage = () => {
+    return (<BrowserRouter><LoginPage /></BrowserRouter>);
+  }
   describe("Layout", () => {
     it("has header of Login", () => {
-      const { container } = render(<LoginPage />);
+      const { container } = render( getLoginPage() );
       const header = container.querySelector("h1");
       expect(header).toHaveTextContent("Login");
     });
 
     it("has input for username", () => {
-      const { queryByPlaceholderText } = render(<LoginPage />);
+      const { queryByPlaceholderText } = render(getLoginPage());
       const usernameInput = queryByPlaceholderText("Your username");
       expect(usernameInput).toBeInTheDocument();
     });
 
     it("has input for password", () => {
-      const { queryByPlaceholderText } = render(<LoginPage />);
+      const { queryByPlaceholderText } = render(getLoginPage());
       const passwordInput = queryByPlaceholderText("Your password");
       expect(passwordInput).toBeInTheDocument();
     });
 
     it("has password type for password input", () => {
-      const { queryByPlaceholderText } = render(<LoginPage />);
+      const { queryByPlaceholderText } = render(getLoginPage());
       const passwordInput = queryByPlaceholderText("Your password");
       expect(passwordInput.type).toBe("password");
     });
     it("has login button", () => {
-      const { container } = render(<LoginPage />);
+      const { container } = render(getLoginPage());
       const button = container.querySelector("button");
       expect(button).toBeInTheDocument();
     });
@@ -58,7 +62,7 @@ describe("LoginPage", () => {
     let usernameInput, passwordInput, button;
 
     const setupForSubmit = () => {
-      const rendered = render(<LoginPage />);
+      const rendered = render(getLoginPage());
       const { container, queryByPlaceholderText } = rendered;
 
       usernameInput = queryByPlaceholderText("Your username");
@@ -70,13 +74,13 @@ describe("LoginPage", () => {
     };
 
     it("sets the username value into state", () => {
-      const { queryByPlaceholderText } = render(<LoginPage />);
+      const { queryByPlaceholderText } = render(getLoginPage());
       const usernameInput = queryByPlaceholderText("Your username");
       fireEvent.change(usernameInput, changeEvent("my-user-name"));
       expect(usernameInput).toHaveValue("my-user-name");
     });
     it("sets the password value into state", () => {
-      const { queryByPlaceholderText } = render(<LoginPage />);
+      const { queryByPlaceholderText } = render(getLoginPage());
       const passwordInput = queryByPlaceholderText("Your password");
       fireEvent.change(passwordInput, changeEvent("P4ssword"));
       expect(passwordInput).toHaveValue("P4ssword");
