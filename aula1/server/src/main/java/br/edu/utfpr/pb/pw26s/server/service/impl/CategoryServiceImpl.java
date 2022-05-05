@@ -30,7 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional(readOnly = true)
     public Category findOne(Long id) {
-        return categoryRepository.getOne(id);
+        return categoryRepository.findById(id).orElse(new Category());
     }
 
     @Override

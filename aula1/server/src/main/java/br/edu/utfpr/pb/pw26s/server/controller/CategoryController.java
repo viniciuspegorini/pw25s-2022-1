@@ -26,7 +26,7 @@ public class CategoryController {
         return categoryService.findAll();
     }
 
-    @GetMapping("/") //http://localhost:8080/categories
+    @GetMapping
     public List<Category> findAll() {
         return categoryService.findAll();
     }
