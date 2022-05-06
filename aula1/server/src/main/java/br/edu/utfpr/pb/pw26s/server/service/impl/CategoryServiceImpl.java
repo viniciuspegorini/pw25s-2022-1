@@ -3,39 +3,22 @@ package br.edu.utfpr.pb.pw26s.server.service.impl;
 import br.edu.utfpr.pb.pw26s.server.model.Category;
 import br.edu.utfpr.pb.pw26s.server.repository.CategoryRepository;
 import br.edu.utfpr.pb.pw26s.server.service.CategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
-public class CategoryServiceImpl implements CategoryService {
+public class CategoryServiceImpl
+        extends CrudServiceImpl<Category, Long>
+        implements CategoryService {
 
-    @Autowired
     private CategoryRepository categoryRepository;
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<Category> findAll() {
-        return categoryRepository.findAll();
+    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
-    @Transactional()
-    public Category save(Category category) {
-        return categoryRepository.save(category);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Category findOne(Long id) {
-        return categoryRepository.findById(id).orElse(new Category());
-    }
-
-    @Override
-    @Transactional()
-    public void delete(Long id) {
-        categoryRepository.deleteById(id);
+    protected JpaRepository<Category, Long> getRepository() {
+        return this.categoryRepository;
     }
 }
