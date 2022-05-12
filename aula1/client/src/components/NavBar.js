@@ -33,6 +33,13 @@ const NavBar = (props) => {
               </NavLink>
             </li>
             <li className="nav-item">
+              <NavLink to="/products" className={(navData) =>
+                  navData.isActive ? "nav-link active" : "nav-link"
+                } >
+                Produtos
+              </NavLink>
+            </li>
+            <li className="nav-item">
               <button className="btn btn-light" onClick={onClickLogout}>
                 &times; Sair
               </button>
