@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import CategoryService from '../services/CategoryService';
 
 export const CategoryListPage = (props) => {
@@ -20,11 +21,24 @@ export const CategoryListPage = (props) => {
             });
     };
 
+    const onRemove = (id) => {
+        CategoryService.remove(id)
+            .then(() => {
+                loadData();
+                setApiError();
+            })
+            .catch((error) => {
+                setApiError('Falha ao remover a categoria.');
+            });
+    }
+
 
     return (
         <div className="container">
             <h1 className="text-center">Lista de Categorias</h1>
-            
+            <div className="text-center">
+                <Link className="btn btn-success" to="/categories/new">Nova Categoria</Link>
+            </div>
             <table className="table">
                 <thead>
                     <tr>
@@ -38,7 +52,17 @@ export const CategoryListPage = (props) => {
                         <tr key={category.id}>
                             <td>{category.id}</td>
                             <td>{category.name}</td>
-                            <td>...</td>
+                            <td>
+                                <Link className="btn btn-primary" 
+                                    to={`/categories/${category.id}`}>
+                                    Editar
+                                </Link>
+
+                                <button className="btn btn-danger" 
+                                  onClick={() => onRemove(category.id)}>
+                                      Remover
+                                </button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
