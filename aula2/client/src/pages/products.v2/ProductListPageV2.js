@@ -64,7 +64,7 @@ export const ProductListPageV2 = () => {
       <h1 className="fs-2 mb-4 text-center">Lista de Produto V2</h1>
       <div className="text-center">
         <Link
-          className="btn btn-success btn-icon col-md-2 mb-2"
+          className="btn btn-success btn-icon mb-2"
           to="/product-v2/new"
           title="Novo Produto"
         >
